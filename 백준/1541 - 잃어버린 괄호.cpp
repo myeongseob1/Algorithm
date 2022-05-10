@@ -1,76 +1,54 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
-#include <string>
 using namespace std;
+
 string a;
-vector<int> num;
 vector<char> op;
-int result ;
-int calculator(char op1,int num1,int num2){
-	switch(op1){
-		case '+':
-			return num1+num2;
-		case '-':
-			return num1-num2;
-	}
-}
+vector<int> num;
+
+
 int main(void){
 	cin>>a;
-	int prev_index = 0;
-	bool minus_ad = false;
-	bool ggang = false;
+	int idx = 0;
+	bool minu = false;
 	for(int i=0;i<a.size();i++){
-		if(a[i]=='-'||a[i]=='+'){
-			ggang = true;
+		if(a[i]=='+'&&minu==false){
+			op.push_back('+');
+			int tmp = 0;
+			for(int j=idx;j<=i-1;j++){
+				tmp += (a[j]-'0')*pow(10,i-1-j);
+			}		
+			num.push_back(tmp);
+			idx = i+1;
+		}
+		else if(a[i]=='-'||(a[i]=='+'&&minu==true)){
+			minu = true;
+			op.push_back('-');
+			int tmp = 0;
+			for(int j=idx;j<=i-1;j++){
+				tmp += (a[j]-'0')*pow(10,i-1-j);
+			}
+			num.push_back(tmp);
+			idx = i+1;
+		}
+		if(i==a.size()-1){
+			int tmp = 0;
+			for(int j=idx;j<=i;j++){
+				tmp += (a[j]-'0')*pow(10,i-j);
+			}
+			num.push_back(tmp);
 		}
 	}
-	if(ggang==true){
-		for(int i=0;i<a.size();i++){
-			vector<char> tmp;
-			int tmp_num = 0;
-			if(a[i]=='-'||a[i]=='+'){
-				if(a[i]=='-'){
-					minus_ad = true;
-				}
-				if(minus_ad==false){
-					op.push_back(a[i]);
-				}
-				else{
-					op.push_back('-');
-				}
-				for(int j=prev_index;j<i;j++){
-					tmp.push_back(a[j]);
-				}
-				for(int j=0;j<tmp.size();j++){
-					tmp_num += ((int)tmp[j]-48)*pow(10,tmp.size()-j-1);
-				}
-				num.push_back(tmp_num);
-				prev_index = i+1;
-			}
+	int answer = num[0];
+	for(int i=1;i<num.size();i++){
+		if(op[i-1]=='-'){
+			answer -= num[i]; 
 		}
-		for(int i=a.size()-1;i>=0;i--){
-			if(a[i]=='-'||a[i]=='+'){
-				vector<char> tmp;
-				int tmp_num = 0;
-				for(int j=i+1;j<a.size();j++){
-					tmp.push_back(a[j]);				
-				}
-				for(int j=0;j<tmp.size();j++){
-					tmp_num += ((int)tmp[j]-48)*pow(10,tmp.size()-j-1);
-				}
-				num.push_back(tmp_num);
-				break;
-			}
-		}
-		result = num[0];
-		for(int i=0;i<op.size();i++){
-			result = calculator(op[i],result,num[i+1]);
+		if(op[i-1]=='+'){
+			answer += num[i]; 
 		}		
 	}
-	else{
-		result = stoi(a);
-	}
-	cout<<result<<"\n";
+	cout<<answer<<"\n";
 	return 0;
 }

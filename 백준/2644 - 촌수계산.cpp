@@ -1,40 +1,39 @@
 #include <iostream>
+#include <vector>
 #include <queue>
 
 using namespace std;
-int n;
-int visit[101];
+
+vector<int> ve[101];
+int n,a,b,m;
 int dist[101];
-vector<int> rel[101];
+bool visit[101];
+
 int main(void){
-	int a,b,p,c,d;
+	cin>>n>>a>>b>>m;
+	for(int i=0;i<m;i++){
+		int p,q;
+		cin>>p>>q;
+		ve[p].push_back(q);
+		ve[q].push_back(p);
+	}	
 	queue<int> q;
-	cin>>n;
-	cin>>a>>b;
-	cin>>p;
-	for(int i=0;i<p;i++){
-		cin>>c>>d;
-		rel[c].push_back(d);
-		rel[d].push_back(c);
-	}
 	q.push(a);
-	visit[a] = 1;
 	while(!q.empty()){
-		int t = q.front();
+		int x = q.front();
 		q.pop();
-		for(int i=0;i<rel[t].size();i++){
-			if(visit[rel[t][i]]==0){
-				visit[rel[t][i]]++;
-				dist[rel[t][i]] = dist[t]+1;
-				q.push(rel[t][i]);
+		for(int k=0;k<ve[x].size();k++){
+			int nx = ve[x][k];
+			if(!visit[nx]){
+				dist[nx] = dist[x] + 1;
+				visit[nx] = true;
+				q.push(nx);
 			}
 		}
 	}
 	if(dist[b]==0){
-		cout<<-1<<"\n";
-	}
-	else
+		dist[b] = -1;
+	} 
 	cout<<dist[b]<<"\n";
-	
 	return 0;
-}
+} 

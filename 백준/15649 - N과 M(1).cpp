@@ -1,40 +1,31 @@
 #include <iostream>
-#include <algorithm>
 #include <vector>
-
 using namespace std;
 
-vector<int> result;
-int answer[8];
-vector<int> tmp;
-void go(int iter,int a, int b){
-	if(iter == b){
-		for(int i=0;i<b;i++){
-			cout<<answer[i]<<" ";			
+int n,m;
+
+int num[9];
+bool visit[9];
+
+void dfs(int iter){
+	if(iter==m){
+		for(int i=0;i<m;i++){
+			cout<<num[i]<<" ";
 		}
 		cout<<"\n";
-
 		return;
 	}
-	for(int i=0;i<a;i++){
-		if(tmp[i]==0) continue;
-		tmp[i]=0;
-		answer[iter]=i+1;
-		go(iter+1,a,b);
-		tmp[i]=1;	
+	for(int i=1;i<=n;i++){
+		if(visit[i]==true) continue;
+		num[iter] = i;
+		visit[i] = true;
+		dfs(iter+1);
+		visit[i] = false;
 	}
-	
 }
 
-
 int main(void){
-	
-	int a,b;
-	cin>>a>>b;
-
-	for(int i=0;i<a;i++){
-		tmp.push_back(1);
-	}
-	go(0,a,b);
+	cin>>n>>m;
+	dfs(0);
 	return 0;
 }

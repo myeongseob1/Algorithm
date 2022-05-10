@@ -1,57 +1,60 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
-
-
+#include <cmath>
 using namespace std;
 
-int a[20][20];
 int n;
-vector<int> team1;
-vector<int> team2;
+int synergy[21][21];
+vector<int> v;
 
-int main(void){
-	cin>>n;
-	vector<int> tmp(n);
-	int ans = 100000,tmp1=0,tmp2=0;
-	for(int i=0;i<n;i++){
-		for(int j=0;j<n;j++){
-			cin>>a[i][j];
+bool visit[21];
+int answer = 1000000000;
+void init(){
+	for(int i=0;i<=n;i++){
+		visit[i] = false;
+	}
+}
+void dfs(int iter,int num){
+	if(num == n/2){
+		int ans1=0,ans2=0;
+		init();
+		for(int i=0;i<v.size();i++){
+			visit[v[i]] = true;
 		}
-		tmp[i] = 1;
-	}
-	for(int i=0;i<n/2;i++){
-		tmp[i] = 0;
-	}
-	do{
+		vector<int> v2;
 		for(int i=0;i<n;i++){
-			if(tmp[i]==0){
-				team1.push_back(i);
-			}
-			if(tmp[i]==1){
-				team2.push_back(i);
+			if(visit[i]==false){
+				v2.push_back(i);
 			}
 		}
 		for(int i=0;i<n/2;i++){
 			for(int j=i;j<n/2;j++){
-				tmp1 += a[team1[i]][team1[j]];
-				tmp1 += a[team1[j]][team1[i]];
-				tmp2 += a[team2[i]][team2[j]];
-				tmp2 += a[team2[j]][team2[i]];
+				ans1 += synergy[v[i]][v[j]];
+				ans1 += synergy[v[j]][v[i]];
+				ans2 += synergy[v2[i]][v2[j]];
+				ans2 += synergy[v2[j]][v2[i]];
 			}
 		}
-		if(tmp1-tmp2>=0&&ans>tmp1-tmp2){
-			ans = tmp1 - tmp2;			
+		answer = min(answer,abs(ans1-ans2));
+		return;
+	}
+	if(iter>=n){
+		return;
+	}
+	v.push_back(iter);
+	dfs(iter+1,num+1);
+	v.pop_back();
+	dfs(iter+1,num);
+}
+
+int main(void){
+	cin>>n;
+	for(int i=0;i<n;i++){
+		for(int j=0;j<n;j++){
+			cin>>synergy[i][j];
 		}
-		else if(tmp1-tmp2<0&&ans>tmp2-tmp1){
-			ans = tmp2 - tmp1;
-		}
-		team1.clear();
-		team2.clear();
-		tmp1 = 0;
-		tmp2 = 0;
-	}while(next_permutation(tmp.begin(),tmp.end()));
-	
-	cout<<ans<<"\n";
+	}
+	dfs(0,0);
+	cout<<answer<<"\n";
 	return 0;
 }

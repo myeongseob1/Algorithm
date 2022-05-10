@@ -1,54 +1,48 @@
 #include <iostream>
-#include <algorithm>
 #include <vector>
-
+#include <algorithm>
 using namespace std;
 
-int a[26][26];
-int d[26][26];
-int dx[4] = {0,0,1,-1};
-int dy[4] = {1,-1,0,0};
-int answer[577];
-int iter;
+int dx[4] = {1,-1,0,0};
+int dy[4] = {0,0,1,-1};
+string map[26];
+int n;
+bool visit[26][26];
+int cnt;
 void dfs(int x,int y,int c){
-	d[x][y] = c;
+	visit[x][y] = true;
+	cnt++;
 	for(int k=0;k<4;k++){
 		int nx = x + dx[k];
 		int ny = y + dy[k];
-		if(0<=nx&&nx<iter&&0<=ny&&ny<iter){
-			if(a[nx][ny]==1&&d[nx][ny]==0){
-				dfs(nx,ny,c);				
+		if(nx>=0&&nx<n&&ny>=0&&ny<n){
+			if(visit[nx][ny]==false&&map[nx][ny]=='1'){
+				dfs(nx,ny,c);
 			}
 		}
 	}
 }
 
 int main(void){
-
-	cin>>iter;
-	for(int i=0;i<iter;i++){
-		for(int j=0;j<iter;j++){
-			scanf("%1d",&a[i][j]);
-			d[i][j] = 0;
-		}
+	cin>>n;
+	for(int i=0;i<n;i++){
+		cin>>map[i];
 	}
-	int start = 0;
-	for(int i=0;i<iter;i++){
-		for(int j=0;j<iter;j++){
-			if(a[i][j]==1&&d[i][j]==0){
-				dfs(i,j,++start);
+	vector<int> pr;
+	int c = 0;
+	for(int i=0;i<n;i++){
+		for(int j=0;j<n;j++){
+			if(visit[i][j]==false&&map[i][j]=='1'){
+				dfs(i,j,++c);
+				pr.push_back(cnt);
+				cnt = 0;
 			}
 		}
 	}
-	for(int i=0;i<iter;i++){
-		for(int j=0;j<iter;j++){
-			answer[d[i][j]]++;
-		}
-	}
-	cout<<start<<"\n";
-	sort(answer+1,answer+start+1);
-	for(int i=1;i<start+1;i++){
-		cout<<answer[i]<<"\n";
+	sort(pr.begin(),pr.end());
+	cout<<c<<"\n";
+	for(int i=0;i<pr.size();i++){
+		cout<<pr[i]<<"\n";
 	}	
 	return 0;
 }

@@ -1,26 +1,29 @@
 #include <iostream>
 
 using namespace std;
-long long int dp[101][10];
+
+long long dp[101][10];
+long long answer;
+int n;
+
 int main(void){
-	int a;
-	cin>>a;
+	cin>>n;
 	for(int i=1;i<=9;i++){
 		dp[1][i] = 1;
 	}
-	for(int i=2;i<=a;i++){
+	for(int i=2;i<=n;i++){
 		for(int j=0;j<=9;j++){
-			dp[i][j] = 0;
-			if(j-1>=0) dp[i][j] += dp[i-1][j-1];
-			if(j+1<=9) dp[i][j] += dp[i-1][j+1];
-			dp[i][j] = dp[i][j]%1000000000;
+			if(j+1 <= 9){
+				dp[i][j] += dp[i-1][j+1]%1000000000; 
+			}
+			if(j-1 >=0){
+				dp[i][j] += dp[i-1][j-1]%1000000000; 				
+			}
 		}
 	}
-	long long int answer = 0;
 	for(int i=0;i<=9;i++){
-		answer += dp[a][i];
-		answer = answer%1000000000;
-	}	
+		answer += dp[n][i]%1000000000;
+	}
 	cout<<answer<<"\n";
 	return 0;
 }

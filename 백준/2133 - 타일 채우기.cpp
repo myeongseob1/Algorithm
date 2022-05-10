@@ -1,20 +1,17 @@
 #include <iostream>
 
 using namespace std;
-int d[31];
 int n;
+int dp[31];
 int main(void){
 	cin>>n;
-	d[0] = 1;
-	d[2] = 3;
-	
-	for(int i=4;i<=n;i=i+2){
-		d[i] = 3*d[i-2];
-		for(int k=0;k<=i-4;k=k+2){
-			d[i] += 2*d[k];	
-		}
-	} 	
-	cout<<d[n]<<"\n";
-	
+	dp[1] = 0;
+	dp[2] = 3;
+	dp[3] = 0;
+	dp[4] = 9;
+	for(int i=5;i<=n;i++){
+		dp[i] = 4*dp[i-4] + 6*dp[i-2];
+	}
+	cout<<dp[n]<<"\n";
 	return 0;
-}
+} 

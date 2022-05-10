@@ -1,42 +1,30 @@
 #include <iostream>
-#include <algorithm>
 #include <vector>
-
+#include <algorithm>
 using namespace std;
 
-vector<int> result;
-int answer[8];
-vector<int> tmp;
-void go(int iter,int start,int a, int b){
-	if(iter == b){
-		for(int i=0;i<b;i++){
-			cout<<answer[i]<<" ";			
-		}
-		cout<<"\n";
-
-		return;
-	}
-	for(int i=start;i<a;i++){
-		if(tmp[i]==0){
-			continue;
-		}
-		tmp[i]=0;
-		answer[iter]=i+1;
-		go(iter+1,i+1,a,b);
-		tmp[i]=1;	
-	}
-	
-}
-
+int n,m;
+int ve[9];
+vector<int> com;
 
 int main(void){
-	
-	int a,b;
-	cin>>a>>b;
-
-	for(int i=0;i<a;i++){
-		tmp.push_back(1);
+	cin>>n>>m;
+	for(int i=0;i<m;i++){
+		com.push_back(0);
 	}
-	go(0,0,a,b);
+	for(int i=m;i<n;i++){
+		com.push_back(1);
+	}
+	for(int i=0;i<n;i++){
+		ve[i] = i+1;
+	}
+	do{
+		for(int i=0;i<n;i++){
+			if(com[i]==0){
+				cout<<ve[i]<<" ";
+			}
+		}
+		cout<<"\n";		
+	}while(next_permutation(com.begin(),com.end()));
 	return 0;
 }

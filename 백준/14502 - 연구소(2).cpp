@@ -1,31 +1,30 @@
 #include <iostream>
-#include <queue>
 #include <vector>
+#include <queue>
+
 using namespace std;
-int answer;
-int a[9][9];
-int d[9][9];
-int n,m;
-vector<pair<int,int> > ve;
+
 int dx[4] = {1,-1,0,0};
 int dy[4] = {0,0,1,-1};
-void init(queue<pair<int,int> > &q){
-	for(int i=0;i<n;i++){
-		for(int j=0;j<m;j++){
-			if(a[i][j]==2) q.push(make_pair(i,j));
-			d[i][j] = 0;
-		}
-	}
-
-}
-
-void dfs(int wall){
-	if(wall==3){
-		int tmp[9][9];
-		copy(&a[0][0],&a[8][8],&tmp[0][0]);
+int map[9][9];
+bool visit[9][9];
+int n,m;
+vector<pair<int,int> > ve;
+int answer;
+void make_wall(int iter){
+	if(iter==3){
 		queue<pair<int,int> > q;
-		int mid = 0;
-		init(q);
+		int cpy_map[9][9];
+		for(int i=0;i<9;i++){
+			for(int j=0;j<9;j++){
+				cpy_map[i][j] = map[i][j];
+				visit[i][j] = false;
+			}
+		}
+		for(int i=0;i<ve.size();i++){
+			q.push(ve[i]);
+			
+		}
 		while(!q.empty()){
 			int x = q.front().first;
 			int y = q.front().second;
@@ -34,47 +33,48 @@ void dfs(int wall){
 				int nx = x+dx[k];
 				int ny = y+dy[k];
 				if(nx>=0&&nx<n&&ny>=0&&ny<m){
-					if(d[nx][ny]==0&&a[nx][ny]==0){
-						a[nx][ny] = 2;
-						d[nx][ny] = 1;
+					if(visit[nx][ny]==false&&cpy_map[nx][ny]==0){
+						cpy_map[nx][ny] = 2;
+						visit[nx][ny] = true;
 						q.push(make_pair(nx,ny));
 					}
 				}
 			}
 		}
+		int rslt = 0;
 		for(int i=0;i<n;i++){
 			for(int j=0;j<m;j++){
-				if(a[i][j]==0){
-					mid++;
+				if(cpy_map[i][j]==0){
+					rslt++;
 				}
 			}
 		}
-		answer = max(answer,mid);
-		copy(&tmp[0][0],&tmp[8][8],&a[0][0]);
-	}
-	if(wall>3){
+		answer = max(answer,rslt);
+		
 		return;
 	}
 	for(int i=0;i<n;i++){
 		for(int j=0;j<m;j++){
-			if(a[i][j]==0){
-				a[i][j] = 1;
-				dfs(wall+1);
-				a[i][j] = 0;
+			if(map[i][j]==0){
+				map[i][j] = 1;
+				make_wall(iter+1);
+				map[i][j] = 0;
 			}
 		}
 	}
-
 }
 
 int main(void){
 	cin>>n>>m;
 	for(int i=0;i<n;i++){
 		for(int j=0;j<m;j++){
-			cin>>a[i][j];
+			cin>>map[i][j];
+			if(map[i][j]==2){
+				ve.push_back(make_pair(i,j));
+			}
 		}
 	}
-	dfs(0);			
+	make_wall(0);
 	cout<<answer<<"\n";
 	return 0;
 }

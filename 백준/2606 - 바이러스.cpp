@@ -1,41 +1,34 @@
 #include <iostream>
-#include <algorithm>
-#include <vector> 
-#include <queue>
+#include <vector>
 using namespace std;
-int n,net;
-int check[101];
-vector<int> p[101];
-int main(void){
-	int a,b;
-	int answer = 0;
-	cin>>n>>net;
-	for(int i=0;i<net;i++){
-		cin>>a>>b;
-		p[a].push_back(b);
-		p[b].push_back(a);
-	}
-	if(p[1].size()==0){
-		cout<<0<<"\n";
-	}
-	else{
-		queue<int> q;
-		q.push(1);
-		check[1] = true;
-		while(!q.empty()){
-			int c = q.front();
-			q.pop();
-			answer++;
-			for(int i=0;i<p[c].size();i++){
-				int t = p[c][i];
-				if(check[t]==0){
-					q.push(p[c][i]);
-					check[t]=1;		
-				}
-			}
+
+vector<int> comp[101];
+int n,m;
+bool visit[101];
+int answer;
+
+void dfs(int st){
+	visit[st] = true;
+	for(int i=0;i<comp[st].size();i++){
+		int x = comp[st][i];
+		if(visit[x]==false){
+			dfs(x);
 		}
-		cout<<answer-1<<"\n";		
 	}
-	
+}
+
+int main(void){
+	cin>>n>>m;
+	for(int i=0;i<m;i++){
+		int a,b;
+		cin>>a>>b;
+		comp[a].push_back(b);
+		comp[b].push_back(a);
+	}
+	dfs(1);
+	for(int i=2;i<=n;i++){
+		if(visit[i]==true) answer++;
+	}
+	cout<<answer<<"\n";
 	return 0;
 }

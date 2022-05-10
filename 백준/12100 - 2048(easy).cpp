@@ -1,138 +1,146 @@
 #include <iostream>
-#include <algorithm>
 #include <vector>
-
+#include <algorithm>
 using namespace std;
 
-int a[21][21];
+int map[21][21];
 int n;
-int dx[4] = {-1,1,0,0};
-int dy[4] = {0,0,-1,1};//상하좌우 순서 
+int dx[4] = { 0,1,0,-1};
+int dy[4] = {-1,0,1, 0};//0<-왼 1아래 2->오 3위 
+int origin_map[21][21];
 
-int permu[5];
-int max_ans;
-int copy_map[21][21];
-
-
-
-void push(int direction){
-	vector<pair<int,int> > p;
+void push(int dir){
+	vector<pair<int,int> > v;
 	for(int i=0;i<n;i++){
 		for(int j=0;j<n;j++){
-			if(a[i][j]!=0){
-				p.push_back(make_pair(i,j));
-			}
+			if(map[i][j]!=0) v.push_back(make_pair(i,j));
 		}
 	}
-	if(direction ==1 || direction ==3){
-		reverse(p.begin(),p.end());
+	if(dir==2||dir==1){
+		reverse(v.begin(),v.end());
 	}
-	for(int i=0;i<p.size();i++){
-		int x = p[i].first;
-		int y = p[i].second;
+	for(int i=0;i<v.size();i++){
+		int x = v[i].first;
+		int y = v[i].second;
 		while(1){
-			int nx = x+dx[direction];
-			int ny = y+dy[direction];
-			if(nx<0||nx>n-1||ny<0||ny>n-1){
+			int nx = x + dx[dir];
+			int ny = y + dy[dir];
+			if(nx<0||nx>=n||ny<0||ny>=n) break;
+			if(map[nx][ny]==0){
+				map[nx][ny] = map[x][y];
+				map[x][y] = 0;
+				x = nx;
+				y = ny;
+				
+			}
+			else{
 				break;
-			}
-			if(a[nx][ny]==0){
-				a[nx][ny] = a[x][y];
-				a[x][y] = 0;
-			}
-			x = nx;
-			y = ny;
-		}		 
+			}	
+		}		
+		
 	}	
 }
-void move(int direction){
-	push(direction);	
-	switch(direction){
-		case 0:
-			for(int i=0;i<n-1;i++){
-				for(int j=0;j<n;j++){
-					if(a[i][j]==a[i+1][j]){
-						a[i][j]*=2;
-						a[i+1][j] = 0;
-					}
+
+void merge(int dir){
+	if(dir==0){
+		for(int i=0;i<n;i++){
+			for(int j=0;j<n-1;j++){
+				int x = i;
+				int y = j;
+				if(map[x][y]==map[x][y+1]){
+					map[x][y] *= 2;
+					map[x][y+1] = 0;
 				}
 			}
-			break;
-		case 1:
-			for(int i=n-1;i>0;i--){
-				for(int j=0;j<n;j++){
-					if(a[i][j]==a[i-1][j]){
-						a[i][j]*=2;
-						a[i-1][j] = 0;
-					}
+		}
+	}
+	else if(dir==1){
+		for(int i=n-1;i>=1;i--){
+			for(int j=0;j<n;j++){
+				int x = i;
+				int y = j;
+
+				if(map[x][y]==map[x-1][y]){
+					map[x][y] *= 2;
+					map[x-1][y] = 0;
 				}
 			}
-			break;
-		case 2:
-			for(int i=0;i<n;i++){
-				for(int j=0;j<n-1;j++){
-					if(a[i][j]==a[i][j+1]){
-						a[i][j]*=2;
-						a[i][j+1] = 0;
-					}
-				}
-			}
-		break;
+		}
 		
-		case 3:
-			for(int i=0;i<n;i++){
-				for(int j=n-1;j>0;j--){
-					if(a[i][j]==a[i][j-1]){
-						a[i][j]*=2;
-						a[i][j-1] = 0;
-					}
+	}
+	else if(dir==2){
+		for(int i=0;i<n;i++){
+			for(int j=n-1;j>=1;j--){
+				int x = i;
+				int y = j;
+
+				if(map[x][y]==map[x][y-1]){
+					map[x][y] *= 2;
+					map[x][y-1] = 0;
 				}
 			}
-		break;
+		}		
 	}
-	push(direction);
-}
-
-void up(int iter,int p){
-	if(iter == p){
-		for(int i=0;i<n;i++){
+	else if(dir==3){
+		for(int i=0;i<n-1;i++){
 			for(int j=0;j<n;j++){
-				copy_map[i][j] = a[i][j];
-			}
-		}
-		for(int i=0;i<iter;i++){
-			move(permu[i]);
-		}
-		for(int i=0;i<n;i++){
-			for(int j=0;j<n;j++){
-				if(a[i][j]>max_ans){
-					max_ans = a[i][j];
+				int x = i;
+				int y = j;
+				if(map[x][y]==map[x+1][y]){
+					map[x][y] *= 2;
+					map[x+1][y] = 0;
 				}
 			}
 		}
-		for(int i=0;i<n;i++){
-			for(int j=0;j<n;j++){
-				a[i][j] = copy_map[i][j];
-			}
-		}
-		return;
-	}
-	for(int i=0;i<p-1;i++){
-		permu[iter] = i;
-		up(iter+1,p);
+		
 	}
 }
-
-
 
 int main(void){
 	cin>>n;
 	for(int i=0;i<n;i++){
 		for(int j=0;j<n;j++){
-			cin>>a[i][j];
+			cin>>map[i][j];
+			origin_map[i][j] = map[i][j];
 		}
 	}
-	up(0,5);
-	cout<<max_ans<<"\n";
+	int answer = 0;
+	for(int a=0;a<4;a++){
+		for(int b=0;b<4;b++){
+			for(int c=0;c<4;c++){
+				for(int d=0;d<4;d++){
+					for(int e=0;e<4;e++){
+						push(a);
+						merge(a);
+						push(a);
+						push(b);
+						merge(b);
+						push(b);
+						push(c);
+						merge(c);
+						push(c);
+						push(d);
+						merge(d);
+						push(d);
+						push(e);
+						merge(e);
+						push(e);
+						for(int i=0;i<n;i++){
+							for(int j=0;j<n;j++){
+								answer = max(answer,map[i][j]);
+							}								
+						}
+						for(int i=0;i<21;i++){
+							for(int j=0;j<21;j++){		
+								map[i][j] = origin_map[i][j];
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	cout<<answer<<"\n";
+
 	return 0;
 }

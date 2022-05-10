@@ -1,67 +1,89 @@
 #include <iostream>
 #include <algorithm>
-#include <vector> 
-#include <queue>
+#include <deque>
+#include <vector>
 using namespace std;
 
-int a[101][101];
-
-vector<pair<int,int> > jirung;
-
+int map[102][102];
 int dx[4] = {0,1,0,-1};
 int dy[4] = {1,0,-1,0};
-int n;
-int apple_n,convert;
+int n;//map의 크기를 저장하는 변수 
+
+deque<pair<int,int> > q;
+deque<pair<int,char> > v;
+
+int right_rot(int dir){
+	return (dir+1)%4;
+}
+int left_rot(int dir){
+	if(dir==0){
+		return 3;
+	}
+	return dir-1;
+}
+
+bool end_game(int x, int y){
+	if(x<0||y<0||x>=n||y>=n){
+		return false;
+	}
+	for(int i=0;i<q.size();i++){
+		if(x==q[i].first&&y==q[i].second){
+			return false;
+		}
+	}
+	return true;
+}
+
 int main(void){
+	int num; 
 	cin>>n;
-	cin>>apple_n;
-	for(int i=0;i<apple_n;i++){
-		int b,c;
-		cin>>b>>c;
-		a[b][c]= 1;
+	cin>>num;
+	for(int i=0;i<num;i++){
+		int a,b;
+		cin>>a>>b;
+		map[a-1][b-1] = 1;
+		
 	}
-	
-	cin>>convert;
-	queue<pair<int,int> > k;
-	for(int i=0;i<convert;i++){
-		int t1;
-		char t2;
-		cin>>t1>>t2;
-		if(t2 == 'D'){
-			k.push(make_pair(t1,1));
-		}
-		if(t2=='L'){
-			k.push(make_pair(t1,3));
-		}
+	cin>>num;
+	for(int i=0;i<num;i++){
+		int a;
+		char b;
+		cin>>a>>b;
+		v.push_back(make_pair(a,b));
 	}
+	q.push_back(make_pair(0,0));
+	int x = 0;
+	int y = 0;
+	int dir = 0;
 	int time = 0;
-	int direction = 0;
-	jirung.push_back(make_pair(1,1));
-	a[1][1] = 2;
 	while(1){
-		if(!k.empty()){
-			if(k.front().first==time){
-				direction = (direction + k.front().second)%4;
-				k.pop();
+		if(v.front().first==time){
+			if(v.front().second=='D'){
+				dir = right_rot(dir);
 			}
+			else if(v.front().second=='L'){
+				dir = left_rot(dir);
+			}
+			v.pop_front();
 		}
+		int nx = x+dx[dir];
+		int ny = y+dy[dir];
+		if(!end_game(nx,ny)){
+			time++;
+			break;
+		}
+		if(map[nx][ny]==0){
+			q.push_front(make_pair(nx,ny));
+			q.pop_back();
+		}
+		else if(map[nx][ny]==1){
+			q.push_front(make_pair(nx,ny));	
+			map[nx][ny] = 0;
+		}
+		x = nx;
+		y = ny;
 		time++;
-		int n_x = jirung[jirung.size()-1].first + dx[direction];
-		int n_y = jirung[jirung.size()-1].second + dy[direction];
-
-		if(n_x>n||n_x<1||n_y<1||n_y>n){
-			break;
-		}
-
-		if(a[n_x][n_y]==2&&jirung.size()>2){
-			break;
-		}
-		if(a[n_x][n_y]==0){
-			a[jirung[0].first][jirung[0].second] = 0;
-			jirung.erase(jirung.begin());
-		}
-		jirung.push_back(make_pair(n_x,n_y));
-		a[n_x][n_y] = 2;				
-	} 
-	cout<<time<<"\n";	
+	}
+	cout<<time<<"\n";
+	return 0;
 }

@@ -1,40 +1,38 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
 
 using namespace std;
 
-int check[2001];
-vector<int> a[2001];
-void dfs(int start){
-	check[start]++;
-	for(int i=0;i<a[start].size();i++){
-		int y = a[start][i];
-		if(check[y]==0){
-			dfs(y);
+int n,m;
+vector<int> connect[2001];
+bool visit[2001];
+int rslt;
+void dfs(int start,int cnt){
+	if(cnt==5){
+		rslt = 1;
+		return;
+	}
+	visit[start] = true;
+	for(int k=0;k<connect[start].size();k++){
+		int nx = connect[start][k];
+		if(!visit[nx]){
+			dfs(nx,cnt+1);
 		}
 	}
+	visit[start] = false;
 }
 
 int main(void){
-	int n,m,p,q;
 	cin>>n>>m;
 	for(int i=0;i<m;i++){
-		cin>>p>>q;
-		a[p].push_back(q);
-		a[q].push_back(p);
+		int a,b;
+		cin>>a>>b;
+		connect[a].push_back(b);
+		connect[b].push_back(a);
 	}
 	for(int i=0;i<n;i++){
-		check[i] = 0;
+		if(!visit[i]) dfs(i,1);
 	}
-	for(int i =0;i<n;i++){
-		dfs(i);		
-	}
-
-	for(int i=0;i<n;i++){
-		cout<<check[i]<<" ";
-	}		
-
-	
+	cout<<rslt<<"\n";
 	return 0;
-}
+} 

@@ -1,75 +1,82 @@
 #include <iostream>
-#include <algorithm>
 #include <vector>
-#include <cstdlib>
-
+#include <cmath>
+#include <queue>
 using namespace std;
-int n,p,q;//p는 최소 q는 최대 
-int a[51][51];
-int d[51][51];
-bool visit[51][51];
-int dx[4] = {0,0,1,-1};
-int dy[4] = {1,-1,0,0};
 
-int minus_abs(int x,int y){
-	if(x>y){
-		return x-y;
+int n,l,r;
+int map[51][51];
+bool visit[51][51];
+
+
+bool movee = false;
+int dx[4] = {1,-1,0,0};
+int dy[4] = {0,0,1,-1};
+
+void init(){
+	for(int i=0;i<51;i++){
+		for(int j=0;j<51;j++){
+			visit[i][j] = false;
+		}
 	}
-	else return y-x;	
+	movee = false;
 }
 
-void dfs(int x,int y,int c){
-	visit[x][y] = true;
-	for(int i=0;i<4;i++){
-		int nx = x+dx[i];
-		int ny = y+dy[i];
-		if(nx>=0&&nx<n&&ny>=0&&ny<n){
-			if(visit[nx][ny]==false&&d[nx][ny]==0&&minus_abs(a[x][y],a[nx][ny])>=p&&minus_abs(a[x][y],a[nx][ny])<=q){
-				visit[nx][ny] = true;
-				d[nx][ny] = c;
-				dfs(nx,ny,c);
+void bfs(int i,int j){
+	queue<pair<int,int> > q;
+	vector<pair<int,int> > contry;
+	contry.push_back(make_pair(i,j));
+	q.push(make_pair(i,j));
+	visit[i][j] = true;
+	while(!q.empty()){
+		int x = q.front().first;
+		int y = q.front().second;
+		q.pop();
+		for(int k=0;k<4;k++){
+			int nx = x+dx[k];
+			int ny = y+dy[k];
+			if(nx>=0&&nx<n&&ny>=0&&ny<n){
+				if(visit[nx][ny]==false&&abs(map[x][y]-map[nx][ny])>=l&&abs(map[x][y]-map[nx][ny])<=r){
+					visit[nx][ny] = true;
+					contry.push_back(make_pair(nx,ny));
+					q.push(make_pair(nx,ny));				
+				}
 			}
 		}
 	}
+	int summ = 0;
+	if(contry.size()>1){
+		movee = true;
+		for(int i=0;i<contry.size();i++){
+			summ += map[contry[i].first][contry[i].second];
+		}
+		for(int i=0;i<contry.size();i++){
+			map[contry[i].first][contry[i].second] = summ/contry.size();
+		}
+	}
 }
- 
 
 int main(void){
-	int answer=0;
-	int c = 0;
-	vector<pair<int,int> > t;
-	vector<int> option;
-	cin>>n>>p>>q;
-	for(int i=0;i<n;i++){		
-		for(int j=0;j<n;j++){
-			cin>>a[i][j];
-		}
-	}
+	cin>>n>>l>>r;
 	for(int i=0;i<n;i++){
 		for(int j=0;j<n;j++){
-			dfs(i,j,c++);
+			cin>>map[i][j];
 		}
 	}
-	for(int i=0;i<n;i++){
-		for(int j=0;j<n;j++){
-			if(d[i][j]!=0){
-				t.push_back(make_pair(i,j));
-				option.push_back(d[i][j]);		
+	int answer = 0;
+	while(1){
+		init();
+		for(int i=0;i<n;i++){
+			for(int j=0;j<n;j++){
+				if(visit[i][j]==false) bfs(i,j);
 			}
 		}
+		if(movee==true){
+			answer++;	
+		}else{
+			break;
+		}		
 	}
-	for(int i=0;i<n;i++){
-		for(int j=0;j<n;j++){
-			cout<<d[i][j];
-		}
-		cout<<"\n";
-	}
-	
-	for(int i=0;i<t.size();i++){
-		cout<<t[i].first<<" "<<t[i].second<<" "<<option[i]<<"\n";
-	}
-	
-	
 	cout<<answer<<"\n";
 	return 0;
 }

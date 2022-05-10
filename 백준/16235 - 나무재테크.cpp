@@ -1,88 +1,77 @@
 #include <iostream>
-#include <vector>
 #include <deque>
-#include <algorithm>
-#include <ios>
+
 using namespace std;
 
-struct tree{
-	int x;
-	int y;
-	int age;
-};
-
 int n,m,k;
-int a[11][11];
-int b[11][11];
-deque<tree> tr;
-
+int yang[11][11];
+int hyang[11][11];
 int dx[8] = {-1,-1,-1, 0,0, 1,1,1};
 int dy[8] = {-1, 0, 1,-1,1,-1,0,1};
 
-bool compare(tree a,tree b){
-	return a.age<b.age;
-}
+deque<int> map[11][11];
 
 int main(void){
-	cin.tie(NULL);
-	cout.tie(NULL);
-	ios::sync_with_stdio(false);
-	
 	cin>>n>>m>>k;
-	for(int i=1;i<=n;i++){
-		for(int j=1;j<=n;j++){
-			cin>>a[i][j];
-			b[i][j]= 5; 
+	for(int i=0;i<n;i++){
+		for(int j=0;j<n;j++){
+			cin>>yang[i][j];
+			hyang[i][j] = 5;
 		}
 	}
 	for(int i=0;i<m;i++){
-		int p,q,r;
-		cin>>p>>q>>r;
-		tr.push_back({p,q,r});
+		int a,b,c;
+		cin>>a>>b>>c;
+		map[a-1][b-1].push_back(c);
 	}
-	sort(tr.begin(),tr.end(),compare);
-	for(int p=0;p<k;p++){
-		vector<tree> del;
-		int f = tr.size();
-		for(int i=0;i<f;i++){
-			if(tr[i].age<=b[tr[i].x][tr[i].y]){
-				b[tr[i].x][tr[i].y] -= tr[i].age;
-				tr[i].age++;
-			}
-			else{
-				del.push_back({tr[i].x,tr[i].y,tr[i].age});
-				tr.erase(tr.begin()+i);
-				i--;
-				f--;
-			}
-			
-		}
-		if(del.size()>0){
-			for(int i=0;i<del.size();i++){
-				b[del[i].x][del[i].y] += del[i].age/2;
-			}		
-		}
-
-		for(int i=0;i<tr.size();i++){
-			if(tr[i].age%5==0){
-				for(int k=0;k<8;k++){
-					int nx = tr[i].x+dx[k];
-					int ny = tr[i].y+dy[k];
-					if(nx>=1&&nx<=n&&ny>=1&&ny<=n){
-						tr.push_front({nx,ny,1});
-						i++;
+	for(int ii=0;ii<k;ii++){
+		for(int i=0;i<n;i++){
+			for(int j=0;j<n;j++){
+				int dele = -1;
+				for(int k=map[i][j].size()-1;k>=0;k--){
+					if(map[i][j][k]<=hyang[i][j]){
+						hyang[i][j] -= map[i][j][k]; 
+						map[i][j][k]++;
+					}else{
+						dele = k;
+						break;
 					}
-				}		
+				}
+				if(dele >=0 ){
+					for(int k=0;k<=dele;k++){
+						hyang[i][j] += map[i][j][0]/2;
+						map[i][j].pop_front();
+					}
+				}
 			}
 		}
-		
-		for(int i=1;i<=n;i++){
-			for(int j=1;j<=n;j++){
-				b[i][j] += a[i][j];
+		for(int i=0;i<n;i++){
+			for(int j=0;j<n;j++){
+				for(int k=0;k<map[i][j].size();k++){
+					if(map[i][j][k]>0&&map[i][j][k]%5==0){
+						for(int t=0;t<8;t++){
+							int nx = i + dx[t];
+							int ny = j + dy[t];
+							if(nx>=0&&nx<n&&ny>=0&&ny<n){
+								map[nx][ny].push_back(1);
+							}
+						}
+					}
+				}
 			}
 		}
-
+		for(int i=0;i<n;i++){
+			for(int j=0;j<n;j++){
+				hyang[i][j] += yang[i][j];
+			}
+		}
 	}
-	cout<<tr.size()<<"\n";
+	int answer = 0;
+	for(int i=0;i<n;i++){
+		for(int j=0;j<n;j++){
+			answer += map[i][j].size();
+		}
+	}
+	cout<<answer<<"\n";
 	return 0;
 }

@@ -1,38 +1,44 @@
 #include <iostream>
-#include <vector>
 #include <queue>
 
 using namespace std;
+
 int f,s,g,u,d;
+bool visit[1000001];
 int dist[1000001];
 int main(void){
 	cin>>f>>s>>g>>u>>d;
 	queue<int> q;
 	q.push(s);
-	dist[s] = 1;
+	visit[s] = true;
+	
 	while(!q.empty()){
-		int t = q.front();
+		int x = q.front();
+		if(x==g) break;
 		q.pop();
-		int nt = t+u;
-		if(nt<=f){
-			if(dist[nt]==0){
-				q.push(nt);
-				dist[nt] = dist[t] + 1;						
+		int nx = x + u;
+		if(nx <= f){
+			if(!visit[nx]){
+				dist[nx] = dist[x] + 1;
+				visit[nx] = true;
+				q.push(nx);
 			}
 		}
-		int nt2 = t-d;
-		if(nt2>0){
-			if(dist[nt2]==0){
-				q.push(nt2);
-				dist[nt2] = dist[t]+1;		
-			}		
+		
+		nx = x - d;
+		if(nx >= 1){
+			if(!visit[nx]){
+				dist[nx] = dist[x] + 1;
+				visit[nx] = true;
+				q.push(nx);
+			}
 		}
-	}
 
-	if(dist[g]==0){
-		cout<<"use the stairs"<<"\n";
 	}
-	else cout<<dist[g]-1<<"\n";
+	if(visit[g]==false){
+		cout<<"use the stairs"<<"\n";
+		return 0;
+	} 
+	cout<<dist[g]<<"\n";
 	return 0;
 }
-

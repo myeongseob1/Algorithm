@@ -1,83 +1,76 @@
 #include <iostream>
-#include <vector>
-#include <algorithm>
 #include <queue>
+
 using namespace std;
 
+struct tomato{
+	int x,y,z;
+};
+
+int map[101][101][101];
+int dist[101][101][101];
+bool visit[101][101][101];
+int n,m,k;
 int dx[6] = {1,-1,0,0,0,0};
 int dy[6] = {0,0,1,-1,0,0};
 int dz[6] = {0,0,0,0,1,-1};
-
-typedef struct point{
-	int x;
-	int y;
-	int z;
-}point;
-
-int a[101][101][101];
-int d[101][101][101];
+queue<tomato> q;
 
 int main(void){
-	int m,n,l;
-	point t;
-	int answer=0;
-	queue<point> q;
-	cin>>m>>n>>l;
-	for(int k=0;k<l;k++){
-		for(int j=0;j<n;j++){
-			for(int i=0;i<m;i++){
-				cin>>a[i][j][k];
-				t.x = i; t.y = j; t.z = k;
-				if(a[i][j][k]==1){
-					q.push(t);
-					d[i][j][k]++;
-				}  
-				if(a[i][j][k]==-1) d[i][j][k] = -1;
+	cin>>m>>n>>k;
+	for(int kk=0;kk<k;kk++){
+		for(int i=0;i<n;i++){
+			for(int j=0;j<m;j++){
+				cin>>map[i][j][kk];
+				if(map[i][j][kk]==1){
+					tomato tmp;
+					tmp.x = i;
+					tmp.y = j;
+					tmp.z = kk;
+					visit[i][j][kk] =true;
+					q.push(tmp);	
+				} 
 			}
-		}
+		}		
 	}
-	
-	
 	while(!q.empty()){
-		int x = q.front().x;
-		int y = q.front().y;
-		int z = q.front().z;
+		int xx = q.front().x;
+		int yy = q.front().y;
+		int zz = q.front().z;
 		q.pop();
-		for(int i=0;i<6;i++){
-			int nx = x+dx[i];
-			int ny = y+dy[i];
-			int nz = z+dz[i];
-			if(nx>=0&&nx<m&&ny>=0&&ny<n&&nz>=0&&nz<l){
-				if(d[nx][ny][nz]==0&&a[nx][ny][nz]==0){
-					point tmp;
-					tmp.x = nx; tmp.y = ny; tmp.z = nz;
-					q.push(tmp);
-					d[nx][ny][nz] = d[x][y][z]+1;
-				}
-			}
-		}
-	}
-	
-	for(int k=0;k<l;k++){
-		for(int j=0;j<n;j++){
-			for(int i=0;i<m;i++){
-				if(d[i][j][k]>answer){
-					answer = d[i][j][k] -1;
+		for(int kk=0;kk<6;kk++){
+			int nx = xx+dx[kk];
+			int ny = yy+dy[kk];
+			int nz = zz+dz[kk];
+			if(nx>=0&&nx<n&&ny>=0&&ny<m&&nz>=0&&nz<k){
+
+				if(visit[nx][ny][nz]==false&&map[nx][ny][nz]==0){
+
+					visit[nx][ny][nz] = true;
+					dist[nx][ny][nz] = dist[xx][yy][zz] +1;
+					tomato tmp2;
+					tmp2.x = nx;
+					tmp2.y = ny;
+					tmp2.z = nz;
+					q.push(tmp2);
 				}
 			}
 		}
 	}
 
-	for(int k=0;k<l;k++){
-		for(int j=0;j<n;j++){
-			for(int i=0;i<m;i++){
-				if(d[i][j][k]==0){
-					answer = -1;	
+	bool we = true;
+	int answer = 0;
+	for(int kk=0;kk<k;kk++){
+		for(int i=0;i<n;i++){
+			for(int j=0;j<m;j++){
+				if(visit[i][j][kk]==false&&map[i][j][kk]==0){
+					we = false;
 				}
+				answer = max(answer,dist[i][j][kk]);
 			}
-		}
+		}	
 	}
-
+	if(we==false) answer = -1;
 	cout<<answer<<"\n";
 	return 0;
 }

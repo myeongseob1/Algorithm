@@ -1,45 +1,57 @@
 #include <iostream>
-#include <algorithm>
 #include <vector>
-#include <cmath>
+#include <algorithm>
+#include <cmath> 
 using namespace std;
+
+int n;
 vector<int> ve;
-int a[8002];//0~4000:-4000 ~ 0 & 1~4000 4001~8001
+int num[8001];
 int main(void){
-	int n;
-	int max=-10000;
-	vector<int> freq;
-	int freq_max = 0;
-	int sum =0;
-	cin>>n; 
-	double average;
+	cin>>n;
 	for(int i=0;i<n;i++){
-		int t;
-		cin>>t;
-		ve.push_back(t);
-		a[t+4000]++;
+		int a;
+		cin>>a;
+		ve.push_back(a);
 	}
-	sort(ve.begin(),ve.end());
+	if(ve.size()>=1) sort(ve.begin(),ve.end());
+	double avg_math = 0;
 	for(int i=0;i<ve.size();i++){
-		sum += ve[i];
+		avg_math += ve[i];
+		num[ve[i]+4000]++;
 	}
-	for(int i=0;i<8001;i++){
-		if(a[i]!=0&&freq_max<a[i]){
-			freq_max = a[i];
+	int whet = 0;
+	int mx = 0;
+	for(int i=0;i<=8000;i++){
+		mx = max(mx,num[i]);
+	}
+	for(int i=0;i<=8000;i++){
+		if(mx==num[i]){
+			whet++;
 		}
 	}
-	for(int i=0;i<8001;i++){
-		if(a[i]==freq_max){
-			freq.push_back(i-4000);
+	int rslt;
+	if(whet==1){
+		for(int i=0;i<=8000;i++){
+			if(mx==num[i]){
+				rslt = i;
+				break;
+			}
 		}
 	}
-	sort(freq.begin(),freq.end());
-	average = floor((double)sum/n+0.5);
-	if(freq.size()==1){
-		cout<<(int)average<<"\n"<<ve[n/2]<<"\n"<<freq[0]<<"\n"<<ve[n-1]-ve[0]<<"\n";	
+	else if(whet>=2){
+		bool flag = false;
+		for(int i=0;i<=8000;i++){
+			if(mx==num[i]&&flag==false){
+				flag = true;
+			}
+			else if(mx==num[i]&&flag==true){
+				rslt = i;
+				break;
+			}
+		}		
 	}
-	else{
-		cout<<(int)average<<"\n"<<ve[n/2]<<"\n"<<freq[1]<<"\n"<<ve[n-1]-ve[0]<<"\n";	
-	}
+	avg_math = round(avg_math/ve.size());
+	cout<<avg_math<<"\n"<<ve[ve.size()/2]<<"\n"<<rslt-4000<<"\n"<<ve[ve.size()-1]-ve[0]<<"\n";
 	return 0;
 }

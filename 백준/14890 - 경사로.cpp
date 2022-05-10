@@ -1,97 +1,143 @@
 #include <iostream>
-#include <algorithm>
-#include <vector>
+#include <cmath>
 
 using namespace std;
 
-int a[101][101];
-int a_reverse[101][101];
-int d_r[101][101];
-int d_c[101][101];
-int n,l,answer;
+int n,l;
+int map[101][101];
+int stair[101][101];
 int main(void){
 	cin>>n>>l;
-	int fail_r[101] = {0,};
-	int fail_c[101] = {0,};
+	for(int i=0;i<n;i++){
+		for(int j=0;j<n;j++){
+			cin>>map[i][j];
+		}
+	}
 	int answer = 0;
 	for(int i=0;i<n;i++){
-		for(int j=0;j<n;j++){
-			cin>>a[i][j];
-		}
-	}
-	for(int i=0;i<n;i++){
-		for(int j=0;j<n;j++){
-			a[i][j] = a_reverse[101][101];
-		}
-	}
-	//행의 모든 숫자가 다 같을경우 
-	for(int i=0;i<n;i++){
+		bool as = true;
 		for(int j=0;j<n-1;j++){
-			if(a[i][j]-a[i][j+1]==1){
-				if(j+l>=n){
-					fail_r[i]++;
-					continue;	
-				} 
-				for(int t=j+1;t<j+l+1;t++){
-					d_r[i][t]++;
-				}
+			if(abs(map[i][j+1]-map[i][j])>1){
+				as = false;
+				break;
 			}
-			if(a[i][j]-a[i][j+1]==-1){
-				if(j-l+1<0){
-					fail_r[i]++;
-					continue;	
-				}
-				for(int t=j;t>j-l;t--){
-					d_r[i][t]++;
+			if(map[i][j+1]-map[i][j]==1){
+				if(j+1-l<0){
+					as = false;
+					break;	
 				} 
+				bool fa = true;
+				for(int t=j+1-l;t<j+1;t++){
+					if(map[i][t]!=map[i][j]){
+						fa = false;
+						break;
+					}
+					if(stair[i][t]==1){
+						fa = false;
+						break;
+					}
+				}
+				if(fa==false){
+					as = false;
+					break;
+				}
+				for(int t=j+1-l;t<j+1;t++){
+					stair[i][t] = 1;
+				}	
 			}
-			if(a[i][j]-a[i][j+1]>1||a[i][j]-a[i][j+1]<-1){
-				fail_r[i]++;
+			if(map[i][j]-map[i][j+1]==1){
+				if(j+l+1>n){
+					as = false;
+					break;	
+				}
+				bool fa = true;
+				for(int t=j+1;t<j+1+l;t++){
+					if(map[i][t]!=map[i][j]-1){
+						fa = false;
+						break;
+					}
+					if(stair[i][t]==1){
+						fa = false;
+						break;
+					}
+				}
+				if(fa==false){
+					as = false;
+					break;	
+				}
+				for(int t=j+1;t<j+1+l;t++){
+					stair[i][t] = 1;
+				}	
+				
 			}
 		}
+		if(as==true) answer++;
 	}
 	for(int i=0;i<n;i++){
 		for(int j=0;j<n;j++){
-			if(d_r[i][j]>1) fail_r[i]++;
+			stair[i][j] = 0;
 		}
 	}
 	for(int j=0;j<n;j++){
+		bool as = true;
 		for(int i=0;i<n-1;i++){
-			if(a[i][j]-a[i+1][j]==1){
-				if(i+l>=n){
-					fail_c[j]++;
-					continue;	
-				} 
-				for(int t=i+1;t<i+l+1;t++){
-					d_c[t][j]++;
-				}
+			if(abs(map[i+1][j]-map[i][j])>1){
+				as = false;
+				break;
 			}
-			if(a[i][j]-a[i+1][j]==-1){
-				if(i-l+1<0){
-					fail_c[j]++;
-					continue;	
-				}
-				for(int t=i;t>i-l;t--){
-					d_c[t][j]++;
+			if(map[i+1][j]-map[i][j]==1){
+				if(i+1-l<0){
+					as = false;
+					break;	
 				} 
+				bool fa = true;
+				for(int t=i+1-l;t<i+1;t++){
+					if(map[t][j]!=map[i][j]){
+						fa = false;
+						break;
+					}
+					if(stair[t][j]==1){
+						fa = false;
+						break;
+					}
+				}
+				if(fa==false){
+					as = false;
+					break;
+				}
+				for(int t=i+1-l;t<i+1;t++){
+					stair[t][j] = 1;
+				}	
 			}
-			if(a[i][j]-a[i+1][j]>1||a[i][j]-a[i+1][j]<-1){
-				fail_c[j]++;
+			if(map[i][j]-map[i+1][j]==1){
+				if(i+l+1>n){
+					as = false;
+					break;	
+				}
+				bool fa = true;
+				for(int t=i+1;t<i+1+l;t++){
+					if(map[t][j]!=map[i][j]-1){
+						fa = false;
+						break;
+					}
+					if(stair[t][j]==1){
+						fa = false;
+						break;
+					}
+				}
+				if(fa==false){
+					as = false;
+					break;	
+				}
+				for(int t=i+1;t<i+1+l;t++){
+					stair[t][j] = 1;
+				}	
+				
 			}
 		}
-	}
-	for(int i=0;i<n;i++){
-		for(int j=0;j<n;j++){
-			if(d_c[j][i]>1) fail_c[i]++;
-		}
+		if(as==true) answer++;
 	}
 
-	for(int i=0;i<n;i++){
-		if(fail_r[i]==0) answer++;
-		if(fail_c[i]==0) answer++;
-
-	}
 	cout<<answer<<"\n";
-	
 	return 0;
 }

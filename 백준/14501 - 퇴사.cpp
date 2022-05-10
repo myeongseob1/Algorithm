@@ -1,38 +1,35 @@
 #include <iostream>
-#include <algorithm>
-#include <vector>
 
 using namespace std;
+
 int n;
-int price[15][2];
-int ans;
-void go(int iter, int nujeok){
-	if(iter>n-1){
-		if(ans<nujeok){
-			ans = nujeok;
+int a[16][2];
+int res;
+void dfs(int iter,int sum){
+	if(iter>=n-1){
+		if(a[n-1][0]==1&&iter==n-1){
+			res = max(res,sum+a[n-1][1]); 	
+		}else{
+			res = max(res,sum);		
 		}
 		return;
 	}
-	
-	if(iter+price[iter][0]>n){
-		go(iter+1,nujeok);			
+	if(iter+a[iter][0]<=n){
+		dfs(iter+a[iter][0],sum+a[iter][1]);	
 	}
-	else{
-		go(iter+1,nujeok);
-		go(iter+price[iter][0],nujeok+price[iter][1]);	
-	}
+	dfs(iter+1,sum);
 }
-
 
 int main(void){
 	cin>>n;
 	for(int i=0;i<n;i++){
-		cin>>price[i][0]>>price[i][1];
+		cin>>a[i][0]>>a[i][1];
 	}
 	for(int i=0;i<n;i++){
-		go(i,0);		
+		if(i+a[i][0]<=n){
+			dfs(i,0);
+		}
 	}
-
-	cout<<ans<<"\n";
+	cout<<res<<"\n";
 	return 0;
 }

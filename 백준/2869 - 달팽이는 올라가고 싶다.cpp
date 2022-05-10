@@ -1,17 +1,14 @@
 #include <iostream>
 
 using namespace std;
-int a,b,v,result,answer;
+int a,b,v,answer;
 int main(void){
 	cin>>a>>b>>v;
-	while(1){
-		answer++;
-		result = result+a;
-		if(result>=v){
-			break;
-		}
-		result = result-b;
+	if((v-a)%(a-b)==0){
+		answer = ((v-a)/(a-b)) + 1;
+	}else{
+		answer = ((v-a)/(a-b)) + 2;		
 	}
-	cout<<answer<<"\n"; 
+	cout<<answer<<"\n";
 	return 0;
-}
+} 

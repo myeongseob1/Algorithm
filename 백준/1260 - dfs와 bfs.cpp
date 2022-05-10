@@ -1,55 +1,61 @@
 #include <iostream>
-#include <algorithm>
-#include <vector>
 #include <queue>
-
+#include <vector>
+#include <algorithm>
 using namespace std;
-bool check[1001];
-vector<int> a[1001];
-void dfs(int x){
-	check[x] = true;
-	cout<<x<<" ";
-	for(int i=0;i<a[x].size();i++){
-		int y = a[x][i];
-		if(check[y]==false){
-			dfs(y);
+
+vector<int> ve[1001];
+int n,m,v;
+bool visit[1001];
+
+void dfs(int st){
+	visit[st] = true;
+	cout<<st<<" ";
+	for(int i=0;i<ve[st].size();i++){
+		int pt = ve[st][i];
+		if(visit[pt]==false){
+			dfs(pt);
 		}
 	}
 }
-void bfs(int t){
+
+void bfs(int st){
 	queue<int> q;
-	check[t] = true; q.push(t);
+	q.push(st);
+	visit[st] = true;
 	while(!q.empty()){
-		int x = q.front(); q.pop();
-		cout<<x<<" ";
-		for(int i=0;i<a[x].size();i++){
-			int y = a[x][i];
-			if(check[y]==false){
-				check[y] = true; q.push(y);
+		int n_t = q.front();
+		q.pop();
+		cout<<n_t<<" ";
+		for(int i=0;i<ve[n_t].size();i++){
+			int pt = ve[n_t][i];
+			if(visit[pt]==false){
+				q.push(pt);
+				visit[pt] = true;
 			}
 		}
+
 	}
 }
-
 
 int main(void){
-	int n,m,start,p,q;
-	cin>>n>>m>>start;
+	cin>>n>>m>>v;
 	for(int i=0;i<m;i++){
-		cin>>p>>q;
-		a[p].push_back(q);
-		a[q].push_back(p);
+		int a,b;
+		cin>>a>>b;
+		ve[a].push_back(b);
+		ve[b].push_back(a);
 	}
-	
 	for(int i=1;i<=n;i++){
-		check[i] = false;
-		sort(a[i].begin(),a[i].end());
+		if(ve[i].size()>1)sort(ve[i].begin(),ve[i].end());
 	}
-	dfs(start);
-	for(int i=0;i<=n;i++){
-		check[i] = false;
-	}
+	dfs(v);
 	cout<<"\n";
-	bfs(start);
+	for(int i=0;i<1001;i++){
+		visit[i] = false;
+	}
+
+	bfs(v);
+	
 	return 0;
-}
+} 

@@ -1,88 +1,99 @@
 #include <iostream>
 #include <vector>
 #include <queue>
-
+#include <cmath>
 using namespace std;
 
 int n,l,r;
-int a[51][51];
-int d[51][51];
-int dx[4] = {0,0,1,-1};
-int dy[4] = {1,-1,0,0};
-int c = 0;
-bool check = false;
+int map[51][51];
+bool visit[51][51];
+int dx[4] = {1,-1,0,0};
+int dy[4] = {0,0,1,-1};
 int answer;
-void init(){
+
+
+bool chk(){
 	for(int i=0;i<n;i++){
 		for(int j=0;j<n;j++){
-			d[i][j] = 0;
+			int x = i;
+			int y = j;
+			for(int k=0;k<4;k++){
+				int nx = x + dx[k];
+				int ny = y + dy[k];
+				if(nx>=0&nx<n&&ny>=0&&ny<n){
+					if(abs(map[nx][ny]-map[x][y])>=l&&abs(map[nx][ny]-map[x][y])<=r){
+						return true;
+					}
+				}
+			}
 		}
 	}
-	check = false;
+	return false;
 }
 
-int abs_minus(int a,int b){
-	if(a>b) return a-b;
-	else return b-a;
-}
-
-void bfs(int t,int s){
-	int sum = 0;
-	vector<pair<int,int> > v;
+void bfs(int x,int y){
 	queue<pair<int,int> > q;
-	q.push(make_pair(t,s));
-	d[t][s] = 1;
-	v.push_back(make_pair(t,s));
+	q.push(make_pair(x,y));
+	visit[x][y] = true;
+	vector<pair<int,int> > share;
+	share.push_back(make_pair(x,y));
 	while(!q.empty()){
 		int x = q.front().first;
 		int y = q.front().second;
 		q.pop();
 		for(int k=0;k<4;k++){
-			int nx = x+dx[k];
-			int ny = y+dy[k];
+			int nx = x + dx[k];
+			int ny = y + dy[k];
 			if(nx>=0&&nx<n&&ny>=0&&ny<n){
-				if(d[nx][ny]==0&&abs_minus(a[x][y],a[nx][ny])>=l&&abs_minus(a[x][y],a[nx][ny])<=r){
-					d[nx][ny] = d[x][y]+1;
+				if(!visit[nx][ny]&&abs(map[nx][ny]-map[x][y])>=l&&abs(map[nx][ny]-map[x][y])<=r){
+					share.push_back(make_pair(nx,ny));
 					q.push(make_pair(nx,ny));
-					v.push_back(make_pair(nx,ny));			
+					visit[nx][ny] = true;
 				}
 			}
-		}	
-	}
-	if(v.size()>1){
-		int sum = 0;
-		for(int i=0;i<v.size();i++){
-			sum += a[v[i].first][v[i].second];
 		}
-		for(int i=0;i<v.size();i++){
-			a[v[i].first][v[i].second] = sum/v.size();
-		}
-		check = true;
 	}
+	if(share.size()>1){
+		int t = 0;
+		for(int i=0;i<share.size();i++){
+			t += map[share[i].first][share[i].second];
+		}
+		t /= share.size();
+		for(int i=0;i<share.size();i++){
+			map[share[i].first][share[i].second] = t;
+		}
+
+	}
+
 }
 
 int main(void){
 	cin>>n>>l>>r;
 	for(int i=0;i<n;i++){
 		for(int j=0;j<n;j++){
-			cin>>a[i][j];
+			cin>>map[i][j];
 		}
 	}
+	
 	while(1){
-		init();
+		if(!chk()){
+			break;
+		}
 		for(int i=0;i<n;i++){
 			for(int j=0;j<n;j++){
-				if(d[i][j]==0){
+				visit[i][j] = false;
+			}
+		}
+		for(int i=0;i<n;i++){
+			for(int j=0;j<n;j++){
+				if(visit[i][j]==false){
 					bfs(i,j);
 				}
 			}
 		}
 		answer++;
-		if(check == false){
-			break;
-		}
+		
 	}
-	
-	cout<<answer-1<<"\n";		
+	cout<<answer<<"\n";
 	return 0;
 }

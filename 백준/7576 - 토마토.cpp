@@ -1,65 +1,57 @@
 #include <iostream>
-#include <algorithm>
 #include <queue>
-#include <vector>
 
 using namespace std;
-int a[1000][1000];
-int d[1000][1000];
-bool check[1000][1000];
-int n,m;
-int dx[4] = {0,0,1,-1};
-int dy[4] = {1,-1,0,0};
+
+int dx[4] = {1,-1,0,0};
+int dy[4] = {0,0,1,-1};
+bool visit[1001][1001];
+int map[1001][1001];
+int dist[1001][1001];
+int n,m,answer;
 queue<pair<int,int> > q;
-void bfs(){
+int main(void){
+	cin>>m>>n;
+	for(int i=0;i<n;i++){
+		for(int j=0;j<m;j++){
+			cin>>map[i][j];
+			if(map[i][j]==1){
+				q.push(make_pair(i,j));
+				visit[i][j] = true;
+			}
+		}
+	}
+	
 	while(!q.empty()){
 		int x = q.front().first;
 		int y = q.front().second;
 		q.pop();
 		for(int k=0;k<4;k++){
-			int nx = x+dx[k];
-			int ny = y+dy[k];
+			int nx = x + dx[k];
+			int ny = y + dy[k];
 			if(nx>=0&&nx<n&&ny>=0&&ny<m){
-				if(a[nx][ny]==0&&d[nx][ny]==-1){
+				if(!visit[nx][ny]&&map[nx][ny]==0){
+					visit[nx][ny] = true;
+					map[nx][ny] = 1;
+					dist[nx][ny] = dist[x][y] + 1;
 					q.push(make_pair(nx,ny));
-					d[nx][ny] = d[x][y] +1;					
 				}
 			}
 		}
 	}
-}
+	for(int i=0;i<n;i++){
+		for(int j=0;j<m;j++){
+			answer = max(answer,dist[i][j]);
+		}
+	}
 
-int main(void){
-	cin>>m>>n;
-	int max = -200;
 	for(int i=0;i<n;i++){
 		for(int j=0;j<m;j++){
-			cin>>a[i][j];
-			d[i][j] = -1;
-			if(a[i][j]==1){
-				q.push(make_pair(i,j));
-				d[i][j]=0;
+			if(!visit[i][j]&&map[i][j]==0){
+				answer = -1;
 			}
 		}
 	}
-	for(int i=0;i<n;i++){
-		for(int j=0;j<m;j++){
-			if(a[i][j]==1) bfs();
-		}
-	}
-	for(int i=0;i<n;i++){
-		for(int j=0;j<m;j++){
-			if(max<d[i][j]) max = d[i][j];
-		}
-	}
-	for(int i=0;i<n;i++){
-		for(int j=0;j<m;j++){
-			if(a[i][j]==0&&d[i][j]==-1){
-				max = -1;
-			}
-		}
-	}
-	cout<<max<<"\n";
-	
+	cout<<answer<<"\n";
 	return 0;
 }

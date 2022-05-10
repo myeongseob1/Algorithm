@@ -1,30 +1,25 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-
 using namespace std;
-int answer[8];
-void go(int iter,int N,int M){
-	if(iter == M){
-		for(int i=0;i<M;i++){
-			cout<<answer[i]<<" ";
+int n,m;
+int p[9];
+void dfs(int iter,int start){
+	if(iter==m){
+		for(int i=0;i<m;i++){
+			cout<<p[i]<<" ";
 		}
 		cout<<"\n";
 		return;
 	}
-	
-	for(int i=0;i<N;i++){
-		if(iter!=0&&answer[iter-1]>i+1) continue; 
-		answer[iter] = i+1;
-		go(iter+1,N,M);
+	for(int i=start;i<n;i++){
+		p[iter] = i+1;
+		dfs(iter+1,i);
 	}
 }
-
-
-
 int main(void){
-	int N,M;
-	cin>>N>>M;
-	go(0,N,M);
+	cin>>n>>m;
+
+	dfs(0,0);
 	return 0;
 }

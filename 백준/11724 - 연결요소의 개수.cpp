@@ -1,43 +1,36 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
 
 using namespace std;
 
-vector<int> list[1001];
-bool check[1001];
-
+vector<int> connect[1001];
+int n,m;
+bool visit[1001];
+int answer;
 void dfs(int start){
-	check[start] = true;
-	for(int i=0;i<list[start].size();i++){
-		int y = list[start][i];
-		if(check[y]==false){
-			dfs(y);
+	visit[start] = true;
+	for(int i=0;i<connect[start].size();i++){
+		int nx = connect[start][i];
+		if(!visit[nx]){
+			dfs(nx);
 		}
 	}
 }
 
 int main(void){
-	int n,m,p,q,result=0;
 	cin>>n>>m;
-
-	for(int i=1;i<=m;i++){
-		cin>>p>>q;	
-		list[p].push_back(q);
-		list[q].push_back(p);
+	for(int i=0;i<m;i++){
+		int u,v;
+		cin>>u>>v;
+		connect[u].push_back(v);
+		connect[v].push_back(u);
 	}
 	for(int i=1;i<=n;i++){
-		check[i] = false;
-	}
-	
-	for(int i=1;i<=n;i++){
-		if(check[i]==false){
+		if(!visit[i]){
 			dfs(i);
-			result++;			
+			answer++;
 		}
-
 	}
-	cout<<result<<"\n";
+	cout<<answer<<"\n";
 	return 0;
 }
-

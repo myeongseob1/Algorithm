@@ -1,118 +1,92 @@
 #include <iostream>
-#include <algorithm>
 #include <queue>
 #include <vector>
+
 using namespace std;
-int time;
-bool last = true;
-int t,m;
-int a[51][51];
-int d[51][51];
-vector<pair<int,int> > real_virus;
-int dx[4] = {0,0,1,-1};
-int dy[4] = {1,-1,0,0};
-bool use[11];
-int num_wall=0;
-int chosen_virus[11];
-int mat=2147483647;
+
+int n,m;
+int map[51][51];
+bool visit[51][51];
+int dist[51][51];
+
+vector<pair<int,int> > virus;
+vector<pair<int,int> > active;
+
+int dx[4] = {1,-1,0,0};
+int dy[4] = {0,0,1,-1};
+int answer = 987654321;
+int tmp;
 void init(){
-	for(int i=0;i<t;i++){
-		for(int j=0;j<t;j++){
-			d[i][j] = 0;
-			if(a[i][j]==1){
-				d[i][j] = -1;
-			}
-			if(a[i][j]==2){
-				d[i][j] = -2;
-			}
+	for(int i=0;i<51;i++){
+		for(int j=0;j<51;j++){
+			visit[i][j] = false;
+			dist[i][j] = 0;
 		}
 	}
-	last = true;
+	tmp = 0;
 }
-
-void choice_virus(int iter,int selected,int n,int m){
-	if(selected==n){
+void dfs(int iter,int num){
+	if(num==m){
 		init();
-		int answer =0;
 		queue<pair<int,int> > q;
-		for(int i=0;i<selected;i++){
-			q.push(real_virus[chosen_virus[i]-1]);
-			d[real_virus[chosen_virus[i]-1].first][real_virus[chosen_virus[i]-1].second]= 1;
-		}	
+		for(int i=0;i<active.size();i++){
+			q.push(make_pair(active[i].first,active[i].second));
+			visit[active[i].first][active[i].second] = true;
+			
+		}
+		
 		while(!q.empty()){
 			int x = q.front().first;
 			int y = q.front().second;
 			q.pop();
 			for(int k=0;k<4;k++){
-				int nx = x+dx[k];
-				int ny = y+dy[k];
-				if(nx>=0&&nx<t&&ny>=0&&ny<t){
-					if(d[nx][ny]==0&&a[nx][ny]!=1){
-						d[nx][ny] = d[x][y] +1;
-						q.push(make_pair(nx,ny));
-						time = d[nx][ny];
-					}
-					if(d[nx][ny]==-2&&a[nx][ny]!=1){
-						d[nx][ny] = d[x][y]+1;
+				int nx = x + dx[k];
+				int ny = y + dy[k];
+				if(nx>=0&&nx<n&&ny>=0&&ny<n){
+					if(visit[nx][ny]==false&&map[nx][ny]!=1){
+						visit[nx][ny] = true;
+						dist[nx][ny] = dist[x][y] + 1;
 						q.push(make_pair(nx,ny));
 					}
 				}
 			}
 		}
-		
-		for(int i=0;i<t;i++){
-			for(int j=0;j<t;j++){
-				if(answer<d[i][j]&&a[i][j]==0){
-					answer = d[i][j];
+		bool sper = false;
+		for(int i=0;i<n;i++){
+			for(int j=0;j<n;j++){
+				if(map[i][j]==0&&visit[i][j]==true){
+					tmp = max(tmp,dist[i][j]);
 				}
-				if(d[i][j]==time&&a[i][j]!=2) last = false;		
+				if(map[i][j]==0&&visit[i][j]==false){
+					sper = true;
+				}
 			}
 		}
-		for(int i=0;i<t;i++){
-			for(int j=0;j<t;j++){
-				if(d[i][j]==0){
-					answer = -1;
-				}		
-			}
-		}
-		if(mat>answer&&answer != -1){
-			if(last == true){
-				mat = answer-1;
-			}
-			else{
-				mat = answer;
-			}
-		}
+		if(sper==false)
+		answer = min(answer,tmp);
 		return;
 	}
-	if(iter>=m) return;
-	chosen_virus[selected] = iter+1;
-	choice_virus(iter+1,selected+1,n,m);
-	choice_virus(iter+1,selected,n,m);
+	if(iter > virus.size()-1) return;
+	active.push_back(virus[iter]);
+	dfs(iter+1,num+1);
+	active.pop_back();
+	dfs(iter+1,num);
 }
 
 int main(void){
-	cin>>t>>m;
-	for(int i=0;i<t;i++){
-		for(int j=0;j<t;j++){
-			cin>>a[i][j];
-			if(a[i][j]==2){
-				real_virus.push_back(make_pair(i,j));
+	cin>>n>>m;
+	for(int i=0;i<n;i++){
+		for(int j=0;j<n;j++){
+			cin>>map[i][j];
+			if(map[i][j]==2){
+				virus.push_back(make_pair(i,j));
 			}
-			if(a[i][j]==1){
-				num_wall++;
-			} 
 		}
 	}
-	
-	int p = real_virus.size();
-	choice_virus(0,0,m,p);
-	if(num_wall== t*t||num_wall+p==t*t){
-		cout<<0<<"\n";
+	dfs(0,0);
+	if(answer==987654321){
+		answer = -1;
 	}
-	else if(mat!=2147483647){
-		cout<<mat-1<<"\n";		
-	}
-	else cout<<-1<<"\n";
+	cout<<answer<<"\n";
 	return 0;
 }

@@ -1,307 +1,68 @@
 #include <iostream>
-#include <algorithm>
+#include <deque>
+#include <cmath>
 #include <vector>
-
 using namespace std;
 
-int wheel[4][9];
-int num;
-int spin[102][2];
-int answer=0;
-
-void spinner(int num,int direction){
-	int tmp[8]={0,0,0,0,0,0,0,0};
-	for(int i=0;i<8;i++){
-		tmp[i] = wheel[num][i];		
+deque<int> wheel[4];
+int n;
+int answer;
+void wheel_a(int wheel_num,int dir){
+	if(dir == 1)
+	{
+		int tmp = wheel[wheel_num][wheel[wheel_num].size()-1];
+		wheel[wheel_num].pop_back();
+		wheel[wheel_num].push_front(tmp);
 	}
-	if(direction==1){
-		for(int i=0;i<7;i++){
-			wheel[num][i+1] = tmp[i]; 
-		}
-		wheel[num][0] = tmp[7];
-	}
-	else if(direction == -1){
-		for(int i=0;i<7;i++){
-			wheel[num][i] = tmp[i+1]; 
-		}
-		wheel[num][7] = tmp[0];
+	else if(dir == -1)
+	{
+		int tmp = wheel[wheel_num][0];
+		wheel[wheel_num].pop_front();
+		wheel[wheel_num].push_back(tmp);
 	}
 }
-
-int main(void){
+int main(void){	
 	for(int i=0;i<4;i++){
 		for(int j=0;j<8;j++){
-			scanf("%1d",&wheel[i][j]);
+			int a;
+			scanf("%1d",&a);
+			wheel[i].push_back(a);
 		}
 	}
-	cin>>num;
-	for(int i=0;i<num;i++){
-		cin>>spin[i][0]>>spin[i][1];
-	}
-	for(int i=0;i<num;i++){
-		switch(spin[i][0]){
-			case 1:
-				if(spin[i][1]==1){
-					if(wheel[0][2]==wheel[1][6]){
-						spinner(0,1);				
-					}
-					else{
-						if(wheel[1][2]==wheel[2][6]){
-							spinner(0,1);
-							spinner(1,-1);
-						}
-						else{
-							if(wheel[2][2]==wheel[3][6]){
-								spinner(0,1);
-								spinner(1,-1);
-								spinner(2,1);
-							}
-							else{
-								spinner(0,1);
-								spinner(1,-1);
-								spinner(2,1);
-								spinner(3,-1);							
-							}
-						}
-					}
+	cin>>n;
+	for(int i=0; i<n; i++){
+		int a,b;
+		cin>>a>>b;
+		vector<pair<int,int> > turn_list;
+		int iter2 = -1 * b;
 
-				}
-				else{
-					if(wheel[0][2]==wheel[1][6]){
-						spinner(0,-1);				
-					}
-					else{
-						if(wheel[1][2]==wheel[2][6]){
-							spinner(0,-1);
-							spinner(1,1);
-						}
-						else{
-							if(wheel[2][2]==wheel[3][6]){
-								spinner(0,-1);
-								spinner(1,1);
-								spinner(2,-1);
-							}
-							else{
-								spinner(0,-1);
-								spinner(1,1);
-								spinner(2,-1);
-								spinner(3,1);							
-							}
-						}
-					}
-				}
+		for(int i=a-1;i>=1;i--){
+			if(wheel[i-1][2]!=wheel[i][6]){
+				turn_list.push_back(make_pair(i-1,iter2));
+				iter2 *= -1;
+			}else{
 				break;
-				
-			case 2:
-				if(spin[i][1]==1){
-					if(wheel[1][2]==wheel[2][6]&&wheel[1][6]==wheel[0][2]){
-						spinner(1,1);
-					}
-					else if(wheel[1][2]==wheel[2][6]&&wheel[1][6]!=wheel[0][2]){
-						spinner(0,-1);
-						spinner(1,1);
-					}
-					else if(wheel[1][6]==wheel[0][2]&&wheel[1][2]!=wheel[2][6]){
-						if(wheel[2][2]==wheel[3][6]){
-							spinner(1,1);
-							spinner(2,-1);
-						}
-						else{
-							spinner(1,1);
-							spinner(2,-1);
-							spinner(3,1);
-						}
-					}
-					else{
-						if(wheel[2][2]==wheel[3][6]){
-							spinner(0,-1);
-							spinner(1,1);
-							spinner(2,-1);
-							
-						}
-						else{
-							spinner(0,-1);
-							spinner(1,1);
-							spinner(2,-1);							
-							spinner(3,1);							
-						}
-					} 
-				}
-				else{
-					if(wheel[1][2]==wheel[2][6]&&wheel[1][6]==wheel[0][2]){
-						spinner(1,-1);
-					}
-					else if(wheel[1][2]==wheel[2][6]&&wheel[1][6]!=wheel[0][2]){
-						spinner(0,1);
-						spinner(1,-1);
-					}
-					else if(wheel[1][6]==wheel[0][2]&&wheel[1][2]!=wheel[2][6]){
-						if(wheel[2][2]==wheel[3][6]){
-							spinner(1,-1);
-							spinner(2,1);
-						}
-						else{
-							spinner(1,-1);
-							spinner(2,1);
-							spinner(3,-1);
-						}
-					}
-					else{
-						if(wheel[2][2]==wheel[3][6]){
-							spinner(0,1);
-							spinner(1,-1);
-							spinner(2,1);
-							
-						}
-						else{
-							spinner(0,1);
-							spinner(1,-1);
-							spinner(2,1);							
-							spinner(3,-1);							
-						}
-
-					}					
-				}
+			}
+		}
+		int iter = -1 * b;
+		for(int i=a-1;i<3;i++){
+			if(wheel[i][2]!=wheel[i+1][6]){
+				turn_list.push_back(make_pair(i+1,iter));
+				iter *= -1;
+			}else{
 				break;
-				
-			case 3:
-				if(spin[i][1]==1){
-					if(wheel[2][6]==wheel[1][2]&&wheel[2][2]==wheel[3][6]){
-						spinner(2,1);
-					}
-					else if(wheel[2][6]==wheel[1][2]&&wheel[2][2]!=wheel[3][6]){
-						spinner(2,1);
-						spinner(3,-1);
-					}
-					else if(wheel[2][2]==wheel[3][6]&&wheel[2][6]!=wheel[1][2]){
-						if(wheel[1][6]==wheel[0][2]){
-							spinner(2,1);
-							spinner(1,-1);
-						}
-						else{
-							spinner(2,1);
-							spinner(1,-1);
-							spinner(0,1);
-						}
-					}
-					else{
-						if(wheel[1][6]==wheel[0][2]){
-							spinner(2,1);
-							spinner(1,-1);
-							spinner(3,-1);
-							
-						}
-						else{
-							spinner(0,1);
-							spinner(1,-1);
-							spinner(2,1);
-							spinner(3,-1);
-							
-						}
-					}
-				}
-				else{
-					if(wheel[2][6]==wheel[1][2]&&wheel[2][2]==wheel[3][6]){
-						spinner(2,-1);
-					}
-					else if(wheel[2][6]==wheel[1][2]&&wheel[2][2]!=wheel[3][6]){
-						spinner(2,-1);
-						spinner(3,1);
-					}
-					else if(wheel[2][2]==wheel[3][6]&&wheel[2][6]!=wheel[1][2]){
-						if(wheel[1][6]==wheel[0][2]){
-							spinner(2,-1);
-							spinner(1,1);
-						}
-						else{
-							spinner(2,-1);
-							spinner(1,1);
-							spinner(0,-1);
-						}
-					}
-					else{
-						if(wheel[1][6]==wheel[0][2]){
-							spinner(2,-1);
-							spinner(1,1);
-							spinner(3,-1);
-							
-						}
-						else{
-							spinner(0,-1);
-							spinner(1,1);
-							spinner(2,-1);
-							spinner(3,1);
-							
-						}
-					}					
-				}
-				break;
-				
-			case 4:
-				if(spin[i][1]==1){
-					if(wheel[3][6]==wheel[2][2]){
-						spinner(3,1);
-					}
-					else{
-						if(wheel[2][6]==wheel[1][2]){
-							spinner(2,-1);
-							spinner(3,1);
-						}
-						else{
-							if(wheel[1][6]==wheel[0][2]){
-								spinner(1,1);
-								spinner(2,-1);
-								spinner(3,1);
-							}
-							else{
-								
-								spinner(0,-1);
-								spinner(1,1);
-								spinner(2,-1);
-								spinner(3,1);
-							}
-						}
-					}
-				}
-				else{
-					if(wheel[3][6]==wheel[2][2]){
-						spinner(3,-1);
-					}
-					else{
-						if(wheel[2][6]==wheel[1][2]){
-							spinner(2,1);
-							spinner(3,-1);
-						}
-						else{
-							if(wheel[1][6]==wheel[0][2]){
-								spinner(1,-1);
-								spinner(2,1);
-								spinner(3,-1);
-							}
-							else{
-								spinner(0,1);
-								spinner(1,-1);
-								spinner(2,1);
-								spinner(3,-1);
-							}
-						}
-					}
-					
-				}
-				break;
+			}
+		}
+		wheel_a(a-1,b);
+		for(int i=0;i<turn_list.size();i++){
+			wheel_a(turn_list[i].first,turn_list[i].second);
+			
 		}
 	}
-	if(wheel[0][0]==1){
-		answer += 1;
-	}
-	if(wheel[1][0]==1){
-		answer +=2;
-	}
-	if(wheel[2][0]==1){
-		answer +=4;
-	}
-	if(wheel[3][0]==1){
-		answer += 8;
+	for(int i=0;i<4;i++){
+		if(wheel[i][0]==1){
+			answer += pow(2,i);
+		}
 	}
 	cout<<answer<<"\n";
 	return 0;

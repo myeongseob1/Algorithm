@@ -1,34 +1,39 @@
 #include <iostream>
-#include <algorithm>
 #include <vector>
-
+#include <algorithm>
 using namespace std;
-int answer[8];
-void go(int iter,int N,int M,vector<int> &a){
-	if(iter == M){
-		for(int i=0;i<M;i++){
-			cout<<answer[i]<<" ";
+int n,m;
+vector<int> ve;
+vector<int> ve2;
+bool visit[9];
+void dfs(int iter,int start){
+	if(iter==m){
+		for(int i=0;i<m;i++){
+			cout<<ve2[i]<<" ";
 		}
 		cout<<"\n";
 		return;
 	}
-	for(int i=0;i<N;i++){
-		if(iter!=0&&answer[iter-1]>=a[i]) continue;
-		answer[iter] = a[i];
-		go(iter+1,N,M,a);
+	for(int i=start;i<n;i++){
+		if(visit[i]==true){
+			continue;
+		}
+		visit[i] = true;
+		ve2.push_back(ve[i]);
+		dfs(iter+1,i);
+		visit[i] = false;
+		ve2.pop_back();
 	}
-	
-} 
+}
 
 int main(void){
-	int N,M;
-
-	cin>>N>>M;
-	vector<int> result(N);
-	for(int i=0;i<N;i++){
-		cin>>result[i];
+	cin>>n>>m;
+	for(int i=0;i<n;i++){
+		int a;
+		cin>>a;
+		ve.push_back(a);
 	}
-	sort(result.begin(),result.end());
-	go(0,N,M,result);
+	sort(ve.begin(),ve.end());
+	dfs(0,0);
 	return 0;
 }

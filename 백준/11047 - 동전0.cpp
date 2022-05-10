@@ -1,24 +1,25 @@
 #include <iostream>
-#include <algorithm>
 
 using namespace std;
-int n,k,answer;
-int a[11];
+int n,k;
+int coi[11];
+int answer;
 int main(void){
 	cin>>n>>k;
 	for(int i=0;i<n;i++){
-		cin>>a[i];	
+		cin>>coi[i];
 	}
-	sort(a,a+n);
 	while(1){
-		if(k>=a[n-1]){
-			k-=a[n-1];
+		int idx = 0;
+		if(k>=coi[n-1]){
+			k-= coi[n-1];
 			answer++;
-		}
-		for(int i=0;i<n-1;i++){
-			if(k>=a[i]&&k<a[i+1]){
-				k-=a[i];
-				answer++;	
+		} 
+		for(int i=n-1;i>=1;i--){
+			if(k>=coi[i-1]&&k<coi[i]){
+				k -= coi[i-1];
+				answer++;
+				break;
 			}
 		}
 		if(k==0){
@@ -27,4 +28,4 @@ int main(void){
 	}
 	cout<<answer<<"\n";
 	return 0;
-}
+} 

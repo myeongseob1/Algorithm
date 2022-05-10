@@ -4,48 +4,48 @@
 
 using namespace std;
 
-int main(void){
-	int iter,result;
-	int max=-1000000000,min=1000000000,sym[4];
-	cin>>iter;
-	vector<int> num(iter),symbol;
-	for(int i=0;i<iter;i++){
-		cin>>num[i];
-	}
+int n;
+int a[12];
+vector<int> op;
 
-	for(int i=0;i<4;i++){
-		cin>>sym[i];
+int main(void){
+	cin>>n;
+	for(int i=0;i<n;i++){
+		cin>>a[i];
 	}
 	for(int i=0;i<4;i++){
-		if(sym[i]!=0){
-			for(int j=0;j<sym[i];j++){
-				symbol.push_back(i);		
-			}
+		int sh;
+		cin>>sh;
+		for(int j=0;j<sh;j++){
+			op.push_back(i);
 		}
+		
 	}
+	
+	int res_max = -2100000000;
+	int res_min = 2100000000;
+	
 	do{
-		result = num[0];
-		for(int i=0;i<symbol.size();i++){
-			if(symbol[i]==0){
-				result += num[i+1];
+		int res = a[0];
+		for(int i=1;i<n;i++){
+			if(op[i-1]==0){
+				res += a[i];
 			}
-			else if(symbol[i]==1){
-				result -= num[i+1];
+			else if(op[i-1]==1){
+				res -= a[i];
 			}
-			else if(symbol[i]==2){
-				result *= num[i+1];
+			else if(op[i-1]==2){
+				res *= a[i];
+				
+			}else if(op[i-1]==3){
+				res /= a[i];
 			}
-			else if(symbol[i]==3){
-				result /= num[i+1];
-			}	
 		}
-		if(max<result){
-			max = result;
-		}
-		if(min>result){
-			min = result;
-		}
-	}while(next_permutation(symbol.begin(),symbol.end()));
-	cout<<max<<"\n"<<min<<"\n"; 
+		res_max = max(res_max,res);
+		res_min = min(res,res_min);
+	}while(next_permutation(op.begin(),op.end()));
+	
+	cout<<res_max<<"\n"<<res_min<<"\n";
+	
 	return 0;
 }

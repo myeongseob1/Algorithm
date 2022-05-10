@@ -1,54 +1,56 @@
 #include <iostream>
-#include <algorithm>
 
 using namespace std;
+
+int map[51][51];
+bool visit[51][51];
+int test_case;
+int dx[4] = {1,-1,0,0};
+int dy[4] = {0,0,1,-1};
 int n,m,k;
-int a[51][51],d[51][51];
-int dx[4] = {0,0,1,-1};
-int dy[4] = {1,-1,0,0};
+int cnt;
+
+void init(){
+	for(int i=0;i<51;i++){
+		for(int j=0;j<51;j++){
+			map[i][j] = 0;
+			visit[i][j] = false;
+		}
+	}
+}
+
 void dfs(int x,int y,int c){
-	d[x][y] = c;
-	for(int t=0;t<4;t++){
-		int nx = x+dx[t];
-		int ny = y+dy[t];
+	visit[x][y] = true;
+	for(int k=0;k<4;k++){
+		int nx = x+dx[k];
+		int ny = y+dy[k];
 		if(nx>=0&&nx<n&&ny>=0&&ny<m){
-			if(a[nx][ny]==1&&d[nx][ny]==0){
+			if(visit[nx][ny]==false&&map[nx][ny]==1){
 				dfs(nx,ny,c);
 			}
 		}
 	}
-	
 }
 
-void init(){
-	for(int i=0;i<n;i++){
-		for(int j=0;j<m;j++){
-			a[i][j] = 0;
-			d[i][j] = 0;
-		}
-	}
-}
-
-int iter;
 int main(void){
-	cin>>iter;
-	for(int p=0;p<iter;p++){
+	cin>>test_case;
+	for(int iii=0;iii<test_case;iii++){
 		init();
 		cin>>n>>m>>k;
 		for(int i=0;i<k;i++){
-			int x,y;
-			cin>>x>>y;
-			a[x][y] = 1;
+			int a,b;
+			cin>>a>>b;
+			map[a][b] = 1;
 		}
-		int aa =0;
+		int c = 0;
 		for(int i=0;i<n;i++){
 			for(int j=0;j<m;j++){
-				if(a[i][j]==1&&d[i][j]==0){
-					dfs(i,j,++aa);
+				if(visit[i][j]==false&&map[i][j]==1){
+					dfs(i,j,++c);
 				}
 			}
 		}
-		cout<<aa<<"\n";		
+		cout<<c<<"\n";
 	}
 	return 0;
 }

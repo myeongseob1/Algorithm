@@ -1,40 +1,34 @@
 #include <iostream>
-#include <algorithm>
 #include <vector>
+#include <algorithm> 
+using namespace std;
 
-using namespace std; 
-
-void print(int iter, vector<int> b){
-	vector<int> help(iter);
-	for(int i=0;i<iter;i++){
-		help[i]=0;
-	}
-	for(int i=6;i<iter;i++){
-		help[i] =1;
-	}
-	do{
-		for(int i=0;i<iter;i++){
-			if(help[i]==0){
-				cout<<b[i]<<" ";
+int main(void){
+	while(1){
+		int n;
+		cin>>n;
+		if(n==0){
+			break;
+		}
+		vector<int> ve;
+		vector<int> com;
+		for(int i=0;i<n;i++){
+			int t;
+			cin>>t;
+			ve.push_back(t);
+			com.push_back(1);
+		}
+		for(int i=0;i<6;i++){
+			com[i] = 0;
+		}
+		do{
+			for(int i=0;i<n;i++){
+				if(com[i]==0){
+					cout<<ve[i]<<" ";
+				}
 			}
-		}
-		cout<<'\n';
-	}while(next_permutation(help.begin(),help.end()));
-	
-}
-
-
-int main(){
-	int iter;
-	while(cin>>iter&&iter){
-		vector<int> num(iter);
-		for(int i=0;i<iter;i++){
-			cin>>num[i];
-		}
-		print(iter,num);		
-
+			cout<<"\n";
+		}while(next_permutation(com.begin(),com.end()));
+		cout<<"\n";
 	}
-
-
-	return 0;
 }

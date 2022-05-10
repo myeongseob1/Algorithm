@@ -1,85 +1,72 @@
 #include <iostream>
-#include <vector>
 #include <deque>
+#include <vector>
 #include <cmath>
+
 using namespace std;
-int a[5][8];
 
-int n;
-deque<int> de[5];
-vector<pair<int,int> > p;
+deque<int> wheel[4];
+int answer;
 
-void spinner(int index,int direction){
-	if(direction==1){
-		int last = de[index].back();
-		de[index].pop_back();
-		de[index].push_front(last);
+void rolling(int num,int dir){
+	if(dir==1){
+		int tmp = wheel[num].back();
+		wheel[num].pop_back();
+		wheel[num].push_front(tmp);
 	}
-	if(direction == -1){
-		int first = de[index].front();
-		de[index].pop_front();
-		de[index].push_back(first);
-	}	
+	else if(dir==-1){
+		int tmp = wheel[num].front();
+		wheel[num].pop_front();
+		wheel[num].push_back(tmp);
+	}
 }
 
+
 int main(void){
-	for(int i=1;i<=4;i++){
-		for(int j=0;j<8;j++){
-			scanf("%1d",&a[i][j]);
-			de[i].push_back(a[i][j]);	
+	for(int ii=0;ii<4;ii++){
+		string inp;
+		cin>>inp;
+		for(int jj=0;jj<inp.size();jj++){
+			wheel[ii].push_back((int)(inp[jj]-'0'));
 		}
-	}
+	}	
+	int n;
 	cin>>n;
-	for(int i=0;i<n;i++){
-		int b,c;
-		cin>>b>>c;
-		p.push_back(make_pair(b,c));
-		int idx = p[0].first;
-		int dir = p[0].second;
-		while(1){//오른쪽 회전 
-			if(idx > 3){
-				break;
-			}
-			if(de[idx][2]==de[idx+1][6]){
-				break;
-			}
-			else{
-				int n_idx = idx+1;
-				int n_dir = dir*-1;
-				p.push_back(make_pair(n_idx,n_dir));
-				idx = n_idx;
-				dir = n_dir;
-			}
-		}
-		idx = p[0].first;
-		dir = p[0].second;
-		while(1){
-			if(idx<2){
-				break;
-			}
-			if(de[idx][6]==de[idx-1][2]){
-				break;
+	for(int ii=0;ii<n;ii++){
+		int a,b;
+		cin>>a>>b;
+		a--;
+		vector<pair<int,int> > roll;
+		roll.push_back(make_pair(a,b));
+		int t = b;
+		for(int i=a;i<3;i++){
+			if(wheel[i][2]!=wheel[i+1][6]){
+				t *= -1;
+				roll.push_back(make_pair(i+1,t));
 			}
 			else{
-				int n_idx = idx-1;
-				int n_dir = dir*-1;
-				p.push_back(make_pair(idx-1,dir*-1));
-				idx = n_idx;
-				dir = n_dir;
+				break;
 			}
 		}
-		for(int i=0;i<p.size();i++){
-			spinner(p[i].first,p[i].second);
+		t = b;
+		for(int i=a;i>=1;i--){
+			if(wheel[i][6]!=wheel[i-1][2]){
+				t *= -1;
+				roll.push_back(make_pair(i-1,t));
+			}
+			else{
+				break;
+			}			
 		}
-		
-		p.clear();		
-	}
-	int answer =0;
-	for(int i=1;i<=4;i++){
-		if(de[i][0]==1){
-			answer += pow(2,i-1);
+		for(int i=0;i<roll.size();i++){
+			rolling(roll[i].first,roll[i].second);
 		}
 	}
-	cout<<answer<<"\n";
+	for(int i=0;i<4;i++){
+		if(wheel[i][0]==1){
+			answer += pow(2,i);
+		}
+	}
+	cout<<answer<<"\n";	
 	return 0;
 }
